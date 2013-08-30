@@ -1,0 +1,33 @@
+apply plugin: "eclipse"
+apply plugin: 'groovy'
+
+apply plugin: 'maven-publish'
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+}
+group =  'com.signal7.devtools'
+version = '1.0.0'
+
+task sourceJar(type: Jar) {
+	from sourceSets.main.allGroovy
+}
+
+publishing {
+    publications {
+        mavenGroovy(MavenPublication) {
+            from components.java
+
+            artifact sourceJar {
+                classifier "sources"
+            }
+        }
+    }
+}
+
+
+//Wrapper
+task wrapper(type:Wrapper) {
+	gradleVersion = "1.7"
+}
