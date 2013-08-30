@@ -9,9 +9,11 @@ class DeploymentTomcatExtension {
 	def providedProjects = [];
 	
 	def warLibsDir;
+	private Project project;
 	
 	
 	DeploymentTomcatExtension(Project project){
+		this.project = project;
 		warLibsDir ="$project/dependencies"
 	}
 	
@@ -24,7 +26,7 @@ class DeploymentTomcatExtension {
 	}
 
 	void useDefaultRules(String base){
-		deploymentRules << new DeploymentRule("$base/WEB-INF/lib","build/dependencies")
+		deploymentRules << new DeploymentRule("$base/WEB-INF/lib",warLibsDir)
 		deploymentRules << new DeploymentRule("$base/WEB-INF/classes", "bin")
 		deploymentRules << new DeploymentRule("$base", "src/main/webapp")
 	}

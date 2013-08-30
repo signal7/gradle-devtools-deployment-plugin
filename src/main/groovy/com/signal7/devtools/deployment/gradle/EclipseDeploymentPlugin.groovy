@@ -2,6 +2,7 @@ package com.signal7.devtools.deployment.gradle;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.tasks.Copy;
 
 class EclipseDeploymentPlugin implements Plugin<Project>{
 
@@ -30,7 +31,7 @@ class EclipseDeploymentPlugin implements Plugin<Project>{
 
 		project.task("provideWarLibs", type:Copy){
 
-			def warLibs = configurations.runtime - configurations.providedRuntime
+			def warLibs = project.configurations.runtime - project.configurations.providedRuntime
 
 			project.deploymentDescriptor.providedProjects.each { p ->
 				warLibs -= p.tasks["jar"].outputs.files
@@ -38,7 +39,7 @@ class EclipseDeploymentPlugin implements Plugin<Project>{
 			from warLibs
 			into project.deploymentDescriptor.warLibsDir
 		}
-		provideWarLibs.dependsOn(war)
+		project.tasks.provideWarLibs.dependsOn(project.tasks.war)
 
 		// fixme
 		outputDeploymentFileTask.outputs.upToDateWhen {false}
