@@ -14,7 +14,7 @@ class DeploymentTomcatExtension {
 	
 	DeploymentTomcatExtension(Project project){
 		this.project = project;
-		warLibsDir ="$project/dependencies"
+		warLibsDir = project.relativePath("$project.buildDir/dependencies")
 	}
 	
 	void providedProject(Project project) {
