@@ -8,7 +8,7 @@ dependencies {
     compile localGroovy()
 }
 group =  'com.signal7.devtools'
-version = '1.0.3'
+version = '1.0.4-SNAPSHOT'
 
 task sourceJar(type: Jar) {
 	from sourceSets.main.allGroovy
