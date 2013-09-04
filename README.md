@@ -1,6 +1,8 @@
 gradle-devtools-deployment-plugin
 =================================
 
+[![Build Status](https://travis-ci.org/signal7/gradle-devtools-deployment-plugin.png)](https://travis-ci.org/signal7/gradle-devtools-deployment-plugin)
+
 Gradle plugin for eclipse devtools deployment plugin
 
 
