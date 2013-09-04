@@ -3,26 +3,33 @@ package com.signal7.devtools.deployment.gradle;
 import org.gradle.api.Project;
 
 class DeploymentTomcatExtension {
-	
+
 	def deploymentRules = []
 
 	def providedProjects = [];
-	
+
 	def warLibsDir;
 	private Project project;
-	
-	
+
+
 	DeploymentTomcatExtension(Project project){
 		this.project = project;
 		warLibsDir = project.relativePath("$project.buildDir/dependencies")
 	}
-	
+
 	void providedProject(Project project) {
 		providedProjects << project
 	}
 	
-	void rule(arg){
-		deploymentRules << new DeploymentRule(arg.toDir, arg.fileSetDir)
+	def rule(arg){
+
+		def deployRule = new DeploymentRule(arg.toDir, arg.fileSetDir)
+		if(arg.excludes){
+			deployRule.excludes += arg.excludes
+		}
+		
+		deploymentRules << deployRule
+		
 	}
 
 	void useDefaultRules(String base){

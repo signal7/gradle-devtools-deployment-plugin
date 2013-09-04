@@ -20,7 +20,11 @@ class EclipseDeploymentPlugin implements Plugin<Project>{
 			xml.deployment(){
 				project.deploymentDescriptor.deploymentRules.each{deploymentRule ->
 					deploy(toDir : deploymentRule.toDir){
-						fileSet(dir : deploymentRule.fileSetDir)
+						fileSet(dir : deploymentRule.fileSetDir){
+							deploymentRule.excludes.each { name->
+								exclude(name:name)
+							}
+						}
 					}
 				}
 			}
