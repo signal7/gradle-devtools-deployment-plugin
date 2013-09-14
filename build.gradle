@@ -1,33 +1,110 @@
-apply plugin: "eclipse"
 apply plugin: 'groovy'
+apply plugin: 'maven'
+apply plugin: 'signing'
+apply plugin: "idea"
+apply plugin: "eclipse"
 
-apply plugin: 'maven-publish'
+version = '0.1.0'
+group = 'com.signal7.devtools'
+def artifact = 'gradle-devtools-deployment-plugin'
+
+configurations {
+    published.extendsFrom archives, signatures
+}
+
+repositories {
+    mavenCentral()
+}
 
 dependencies {
-    compile gradleApi()
     compile localGroovy()
+    compile gradleApi()
 }
-group =  'com.signal7.devtools'
-version = '1.0.5'
+
+jar {
+    baseName = artifact
+}
 
 task sourceJar(type: Jar) {
-	from sourceSets.main.allGroovy
+    description = 'An archive of the source code for Maven Central'
+    baseName = artifact
+    classifier = 'sources'
+    from sourceSets.main.allGroovy
 }
 
-publishing {
-    publications {
-        mavenGroovy(MavenPublication) {
-            from components.java
+task groovydocJar(type: Jar, dependsOn: groovydoc) {
+    description = 'An archive of the GroovyDocs for Maven Central'
+    baseName = artifact
+    classifier = 'javadoc'
+    from fileTree(groovydoc.destinationDir)
+}
 
-            artifact sourceJar {
-                classifier "sources"
-            }
-        }
+artifacts {
+    archives groovydocJar, sourceJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.project(pomConfiguration)
     }
 }
 
+uploadPublished {
+    dependsOn << [signArchives]
+    repositories.mavenDeployer {
+        beforeDeployment { deployment ->
+            signing.signPom(deployment)
+        }
+        name = 'mavenCentralReleaseDeployer'
+        repository(url: mavenCentralURL) {
+            authentication(userName: mavenCentralUsername, password: mavenCentralPassword)
+            releases(updatePolicy: 'always')
+            snapshots(updatePolicy: 'never')
+        }
+        pom.project(pomConfiguration)
+    }
+}
 
-//Wrapper
-task wrapper(type:Wrapper) {
-	gradleVersion = "1.7"
+task wrapper(type: Wrapper) {
+    gradleVersion = "1.7"
+}
+
+//
+// A single place to create the POM configuration, so it can be
+// applied from the install and the upload tasks.
+//
+def getPomConfiguration() {
+    return {
+        name('Gradle Signal7 Devtools Deployment Plugin')
+        description('A Gradle plugin for the Deployment plugin of the Signal7 Devtools Eclipse Plugin.')
+        url('https://github.com/signal7/gradle-devtools-deployment-plugin')
+        licenses {
+            license {
+                name 'The Apache Software License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                distribution 'repo'
+            }
+        }
+        developers {
+            developer {
+                id('mbruchmann')
+                name('Max Bruchmann')
+                email('bruchmann@signal7.de')
+            }
+            developer {
+                id('aconstantin')
+                name('Alexander Constantin')
+                email('constantin@signal7.de')
+            }
+        }
+        scm {
+            connection('scm:https://github.com/signal7/gradle-devtools-deployment-plugin.git')
+            developerConnection('scm:git@github.com:signal7/gradle-devtools-deployment-plugin.git')
+            url('https://github.com/signal7/gradle-devtools-deployment-plugin')
+        }
+    }
 }
