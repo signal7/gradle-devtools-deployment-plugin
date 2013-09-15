@@ -1,6 +1,6 @@
 language: java
 jdk:
  - oraclejdk7
-script: ./gradlew build
+script: ./gradlew build -x signArchives
 notifications:
   email: false
